@@ -1,5 +1,5 @@
 import sys, os; sys.path.append(os.pardir)
-from Cametrics import Cametrics 
+import Cametrics 
 
 # Simple Unit Test for Cametrics
 Cametrics.initialize('ahBjYW1ldHJpY3Mtc3RyZXNzchALEghDYW1wYWlnbhjCgAIM', {
