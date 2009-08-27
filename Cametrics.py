@@ -11,7 +11,7 @@ _axes = {
 _options = {
   'secret.key': '',
   'url.protocol': 'http',
-  'url.host': 'cametrics.appspot.com',
+  'url.host': 'cametrics-test.appspot.com',
   'namespace.separators': r'/[^a-zA-Z0-9]+/',
   'response.format': 'json',
   'request.size': 250
@@ -50,6 +50,9 @@ def _post_data():
     if ((e.code <> 201) and (e.code <> 200)):
       raise Exception('Post did not work: %d' % (e.code))
 
+  #clear data queue
+  del _data[:]
+
 def initialize(secret_key, options = {}):
   _options.update(options)
   _options.update({'secret.key' : secret_key})
@@ -62,8 +65,8 @@ def prepare_string(value):
   return str(value).strip()
 
 def prepare_location(value):
+  coord = {'x': None, 'y': None}
   if isinstance(value, dict):
-    coord = {'x': None, 'y': None}
     for axis, tests in _axes.iteritems():
       for test in tests:
         if test in value:
@@ -74,10 +77,15 @@ def prepare_location(value):
       logging.warning('Cametrics guessing that value, %s, is (%s, %s)' % value, value[0], value[1])
       coord['x'] = value[0]
       coord['y'] = value[1]
-    elif None == coord['x'] or None == coord['y']:
-      logging.error('Cametrics could not prepare: %s' % value)
-      return None
-    return '%(x)s,%(y)s' % coord
+  elif isinstance(value,str):
+  	values = value.split(',')
+  	coord['x'] = int(values[0])
+  	coord['y'] = int(values[1])
+  
+  if None == coord['x'] or None == coord['y']:
+    logging.error('Cametrics could not prepare: %s' % value)
+    return None
+  return '%(x)s,%(y)s' % coord
   
 def prepare(value, vtype):
   """
